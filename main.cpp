@@ -1,8 +1,10 @@
 #include <iostream>
 #include <stdio.h>
-#include <string.h>
+#include <string>
 #include "SDL.h"
 #include "SDL_image.h"
+
+using namespace std;
 
 /* PARAMETERS */
 int const OFFSET = 2;
@@ -51,6 +53,8 @@ cell Map[15][15];
 Player player[5];
 cell base;
 
+string greeting = "Hello";
+
 /************************/
 /****** Functions *******/
 /************************/
@@ -61,28 +65,28 @@ cell base;
 // initialize state
 void init(const char *title, int xPos, int yPos, int width, int height, bool fullScreen);
 
-  /* set Images */
-  // Load images from files
-  void setImage(char name[], SDL_Texture **var);
+/* set Images */
+// Load images from files
+void setImage(char name[], SDL_Texture **var);
 
-  /* init Map */
-  // init grid
-  // init players
-  // init base
-  void initMap();
+/* init Map */
+// init grid
+// init players
+// init base
+void initMap();
 
-    /* Create player */
-    // create new player
-    // fill player
-    // fill player balls
-    // return player
-    Player newPlayer(int x, int y, char color);
+/* Create player */
+// create new player
+// fill player
+// fill player balls
+// return player
+Player newPlayer(int x, int y, char color);
 
-      /* Create cell */
-      // declare new cell
-      // fill cell
-      // return cell
-      cell newCell(int x, int y, int s, char color);
+/* Create cell */
+// declare new cell
+// fill cell
+// return cell
+cell newCell(int x, int y, int s, char color);
 
 /* Handle user input */
 // not ready yet ....
@@ -91,6 +95,12 @@ void handleEvent();
 /* update environment objects and state */
 // not ready yet
 void update();
+/* render environment objects on screen */
+// to be filled ......
+void render();
+/* clear app */
+// to be filled ......
+void clean();
 
 /* Start function */
 int main(int argv, char **args)
