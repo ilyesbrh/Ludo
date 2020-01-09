@@ -29,11 +29,14 @@ SDL_Texture *redCircle;
 SDL_Texture *greenCircle;
 SDL_Texture *yellowCircle;
 SDL_Texture *blueCircle;
+// dices
+SDL_Texture *diceImages[6];
 // images
 SDL_Texture *center;
 
 /* State variables */
 bool isRunning;
+bool isDiceRunning;
 
 /* environment objects */
 //structure
@@ -48,10 +51,16 @@ struct Player
   cell ball[4];
   char color;
 };
+struct Dice
+{
+  cell dice;
+  int current;
+};
 // variables
 cell Map[15][15];
 Player player[5];
 cell base;
+Dice dice;
 
 string greeting = "Hello";
 
@@ -87,6 +96,11 @@ Player newPlayer(int x, int y, char color);
 // fill cell
 // return cell
 cell newCell(int x, int y, int s, char color);
+
+/* Create dice */
+// set current player
+// set draw position
+void setupDice(int plyer, int face);
 
 /* Handle user input */
 // not ready yet ....
@@ -183,6 +197,14 @@ void init(const char *title, int xPos, int yPos, int width, int height, bool ful
   setImage("assets/y-c.png", &yellowCircle);
   setImage("assets/r-c.png", &redCircle);
 
+  /* Dice images */
+  setImage("assets/1.png", &diceImages[0]);
+  setImage("assets/2.png", &diceImages[1]);
+  setImage("assets/3.png", &diceImages[2]);
+  setImage("assets/4.png", &diceImages[3]);
+  setImage("assets/5.png", &diceImages[4]);
+  setImage("assets/6.png", &diceImages[5]);
+
   /* other images */
   setImage("assets/c.png", &center);
 
@@ -257,6 +279,19 @@ void initMap()
   player[3] = newPlayer(0, 9, 'b');
   /* init base */
   base = newCell(6, 6, 3 * (SIZE + SPACE) - SPACE, 'c');
+  /* init dice */
+  setupDice(0, 6);
+}
+
+void setupDice(int plyer, int face)
+{
+  dice.current = plyer;
+  dice.dice.color = face;
+  dice.dice.rect.h = SIZE - SPACE;
+  dice.dice.rect.w = SIZE - SPACE;
+  dice.dice.rect.x = 3 * (SIZE + SPACE) - (SIZE / 2) + player[dice.current].base.rect.x;
+  dice.dice.rect.y = 3 * (SIZE + SPACE) - (SIZE / 2) + player[dice.current].base.rect.y;
+  isDiceRunning = false;
 }
 
 Player newPlayer(int x, int y, char color)
@@ -314,7 +349,18 @@ void handleEvent()
   }
 }
 
-void update() {}
+int count = 100;
+void update()
+{
+  count--;
+  if (count == 0)
+  {
+    count = 100;
+    setupDice((dice.current + 1) % 4, ((dice.dice.color + 1) % 7));
+
+    std::cout << "updated" << std::endl;
+  }
+}
 
 void DrawShape(cell c)
 {
@@ -352,6 +398,30 @@ void DrawShape(cell c)
     break;
   case 'c':
     SDL_RenderCopy(renderer, center, NULL, &c.rect);
+    /* code */
+    break;
+  case 1:
+    SDL_RenderCopy(renderer, diceImages[0], NULL, &c.rect);
+    /* code */
+    break;
+  case 2:
+    SDL_RenderCopy(renderer, diceImages[1], NULL, &c.rect);
+    /* code */
+    break;
+  case 3:
+    SDL_RenderCopy(renderer, diceImages[2], NULL, &c.rect);
+    /* code */
+    break;
+  case 4:
+    SDL_RenderCopy(renderer, diceImages[3], NULL, &c.rect);
+    /* code */
+    break;
+  case 5:
+    SDL_RenderCopy(renderer, diceImages[4], NULL, &c.rect);
+    /* code */
+    break;
+  case 6:
+    SDL_RenderCopy(renderer, diceImages[5], NULL, &c.rect);
     /* code */
     break;
 
@@ -403,6 +473,9 @@ void render()
     {
       DrawShape(player[i].ball[j]);
     }
+
+    // Draw dice
+    DrawShape(dice.dice);
   }
 
   // Draw Center base
