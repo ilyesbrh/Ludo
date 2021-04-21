@@ -72,7 +72,7 @@ string greeting = "Hello";
 // initialize SDL window
 // Load images
 // initialize state
-void init(const char *title, int xPos, int yPos, int width, int height, bool fullScreen);
+void init(char title[], int xPos, int yPos, int width, int height, bool fullScreen);
 
 /* set Images */
 // Load images from files
@@ -116,14 +116,34 @@ void render();
 // to be filled ......
 void clean();
 
+void DrawShape(cell c);
+
 /* Start function */
 int main(int argv, char **args)
 {
+  int i, x;
+
+  cin >> x;
+
+  i = 0;
+
+  while (i < (x/2))
+  {
+    i++;
+    if ((x % i) == 0)
+    {
+      std::cout << i << std::endl;
+    }
+  }
+  cin >> x;
+  return 0;
 
   init("chichbich", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 632, 632, false);
 
   Uint32 StartTime;
   Uint32 ProccessTime;
+
+  isRunning = true;
 
   /* Game loop */
   while (isRunning)
@@ -152,7 +172,7 @@ int main(int argv, char **args)
   return 0;
 }
 
-void init(const char *title, int xPos, int yPos, int width, int height, bool fullScreen)
+void init(char title[], int xPos, int yPos, int width, int height, bool fullScreen)
 {
   int flags = 0;
   if (fullScreen)
@@ -211,16 +231,6 @@ void init(const char *title, int xPos, int yPos, int width, int height, bool ful
   /* INIT map values */
   initMap();
 }
-
-void setImage(char name[], SDL_Texture **var)
-{
-  SDL_Surface *img_temp;
-  img_temp = IMG_Load(name);
-  SDL_SetColorKey(img_temp, SDL_TRUE, SDL_MapRGB(img_temp->format, 122, 122, 122));
-  *var = SDL_CreateTextureFromSurface(renderer, img_temp);
-  SDL_FreeSurface(img_temp);
-}
-
 void initMap()
 {
   /* init Grid */
@@ -228,97 +238,14 @@ void initMap()
   {
     for (int y = 0; y < 15; y++)
     {
-
       Map[x][y] = newCell(x, y, SIZE, 'w');
-
-      if (x == 7 && y > 0 && y < 14)
-      {
-        if (y > 7)
-        {
-          Map[x][y].color = 'b';
-        }
-        else
-        {
-          Map[x][y].color = 'g';
-        }
-      }
-      if (y == 7 && x > 0 && x < 14)
-      {
-        if (x > 7)
-        {
-          Map[x][y].color = 'y';
-        }
-        else
-        {
-          Map[x][y].color = 'r';
-        }
-      }
-      if (x == 8 && y == 1)
-      {
-        Map[x][y].color = 'g';
-      }
-      if (x == 6 && y == 13)
-      {
-        Map[x][y].color = 'b';
-      }
-      if (x == 1 && y == 6)
-      {
-        Map[x][y].color = 'r';
-      }
-      if (x == 13 && y == 8)
-      {
-        Map[x][y].color = 'y';
-      }
     }
   }
 
-  /* init Players */
-  player[0] = newPlayer(0, 0, 'r');
-  player[1] = newPlayer(9, 0, 'g');
-  player[2] = newPlayer(9, 9, 'y');
-  player[3] = newPlayer(0, 9, 'b');
   /* init base */
   base = newCell(6, 6, 3 * (SIZE + SPACE) - SPACE, 'c');
-  /* init dice */
-  setupDice(0, 6);
 }
 
-void setupDice(int plyer, int face)
-{
-  dice.current = plyer;
-  dice.dice.color = face;
-  dice.dice.rect.h = SIZE - SPACE;
-  dice.dice.rect.w = SIZE - SPACE;
-  dice.dice.rect.x = 3 * (SIZE + SPACE) - (SIZE / 2) + player[dice.current].base.rect.x;
-  dice.dice.rect.y = 3 * (SIZE + SPACE) - (SIZE / 2) + player[dice.current].base.rect.y;
-  isDiceRunning = false;
-}
-
-Player newPlayer(int x, int y, char color)
-{
-  Player player;
-  player.base = newCell(x, y, 6 * (SIZE + SPACE) - SPACE, color);
-  player.color = color;
-  for (int i = 0; i < 4; i++)
-  {
-    player.ball[i].color = color - 32;
-    player.ball[i].rect.w = SIZE - 2 * SPACE;
-    player.ball[i].rect.h = SIZE - 2 * SPACE;
-  }
-  player.ball[0].rect.x = player.base.rect.x + SIZE + SPACE + (SIZE / 2) + (SIZE + SPACE) * 0;
-  player.ball[0].rect.y = player.base.rect.y + SIZE + SPACE + (SIZE / 2) + (SIZE + SPACE) * 0;
-
-  player.ball[1].rect.x = player.base.rect.x + SIZE + SPACE + (SIZE / 2) + (SIZE + SPACE) * 2;
-  player.ball[1].rect.y = player.base.rect.y + SIZE + SPACE + (SIZE / 2) + (SIZE + SPACE) * 0;
-
-  player.ball[2].rect.x = player.base.rect.x + SIZE + SPACE + (SIZE / 2) + (SIZE + SPACE) * 0;
-  player.ball[2].rect.y = player.base.rect.y + SIZE + SPACE + (SIZE / 2) + (SIZE + SPACE) * 2;
-
-  player.ball[3].rect.x = player.base.rect.x + SIZE + SPACE + (SIZE / 2) + (SIZE + SPACE) * 2;
-  player.ball[3].rect.y = player.base.rect.y + SIZE + SPACE + (SIZE / 2) + (SIZE + SPACE) * 2;
-
-  return player;
-}
 cell newCell(int x, int y, int s, char color)
 {
   cell temp;
@@ -332,6 +259,15 @@ cell newCell(int x, int y, int s, char color)
   temp.rect = dstrect;
 
   return temp;
+}
+
+void setImage(char name[], SDL_Texture **var)
+{
+  SDL_Surface *img_temp;
+  img_temp = IMG_Load(name);
+  SDL_SetColorKey(img_temp, SDL_TRUE, SDL_MapRGB(img_temp->format, 122, 122, 122));
+  *var = SDL_CreateTextureFromSurface(renderer, img_temp);
+  SDL_FreeSurface(img_temp);
 }
 
 void handleEvent()
@@ -352,14 +288,26 @@ void handleEvent()
 int count = 100;
 void update()
 {
-  count--;
-  if (count == 0)
-  {
-    count = 100;
-    setupDice((dice.current + 1) % 4, ((dice.dice.color + 1) % 7));
+}
 
-    std::cout << "updated" << std::endl;
+void render()
+{
+  // clear renderer
+  SDL_RenderClear(renderer);
+
+  for (int x = 0; x < 15; x++)
+  {
+    for (int y = 0; y < 15; y++)
+    {
+      DrawShape(Map[x][y]);
+    }
   }
+
+  // Draw Center base
+  DrawShape(base);
+
+  // present renderer
+  SDL_RenderPresent(renderer);
 }
 
 void DrawShape(cell c)
@@ -430,59 +378,6 @@ void DrawShape(cell c)
 
     break;
   }
-}
-cell getinsideCell(cell c)
-{
-  cell tc;
-
-  tc.rect.x = c.rect.x + SIZE + SPACE;
-  tc.rect.y = c.rect.y + SIZE + SPACE;
-  tc.rect.w = c.rect.w - 2 * (SIZE + SPACE);
-  tc.rect.h = c.rect.h - 2 * (SIZE + SPACE);
-
-  tc.color = 'w';
-  return tc;
-}
-void render()
-{
-
-  // clear renderer
-  SDL_RenderClear(renderer);
-
-  // Draw cells
-  for (int x = 0; x < 15; x++)
-  {
-    for (int y = 0; y < 15; y++)
-    {
-      DrawShape(Map[x][y]);
-    }
-  }
-
-  // Draw bases
-  for (int i = 0; i < 5; i++)
-  {
-    // Draw outside
-    DrawShape(player[i].base);
-
-    // Draw inside
-    cell temp_cell = getinsideCell(player[i].base);
-    DrawShape(temp_cell);
-
-    // Draw balls
-    for (int j = 0; j < 4; j++)
-    {
-      DrawShape(player[i].ball[j]);
-    }
-
-    // Draw dice
-    DrawShape(dice.dice);
-  }
-
-  // Draw Center base
-  DrawShape(base);
-
-  // present renderer
-  SDL_RenderPresent(renderer);
 }
 
 void clean()
